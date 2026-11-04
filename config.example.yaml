@@ -1,0 +1,169 @@
+# Signal configuration
+# ---------------------------------------------------------------------------
+# On first run this file is copied to config.yaml (which is git-ignored).
+# Edit config.yaml, or use the Settings page in the web UI (it writes back here).
+# Secrets (API keys, notification URLs, the web password) belong in .env.
+
+# Where content and state live. Relative paths are resolved from this folder.
+vault_path: ./vault          # Markdown articles + digests. Open this folder in Obsidian.
+data_dir: ./data             # SQLite index (rebuildable with `signal reindex`)
+logs_dir: ./logs             # Rotating log files
+sources_file: ./sources.yaml # Feed list (also editable from the Sources page)
+# prompts_dir: ./my-prompts  # Optional folder of prompt .md files that override the built-in ones
+
+timezone: Australia/Brisbane # IANA name. Brisbane is UTC+10 with no daylight saving.
+
+schedule:
+  collect_interval_minutes: 60  # How often to collect while the app is running
+  digest_time: "11:00"          # Daily digest time (local). US close and ASX open are covered by then.
+  catch_up_on_start: true       # Collect immediately on start; build today's digest if it's overdue
+  max_digest_gap_hours: 72      # If the last digest is older than this, only the last 72 h are used
+  summarize_after_collect: true # Summarise new articles right after each collection
+
+collection:
+  user_agent: "SignalNewsBot/0.1 (personal use)"
+  timeout_seconds: 20
+  max_retries: 3                # Retries with backoff on timeouts, 429 and 5xx
+  per_domain_delay_seconds: 1.0 # At most one request per second per domain
+  max_concurrency: 10
+  full_text_min_chars: 800      # Fetch the full page only if the feed text is shorter than this
+  respect_robots_txt: true
+  resolve_google_news: true     # Turn Google News redirect links into the real article URL
+  google_news: { hl: en-US, gl: US, ceid: "US:en" }
+  auto_disable_after_failures: 10
+  max_items_per_feed: 60
+  max_age_days: 7               # Ignore feed items published longer ago than this
+
+dedupe:
+  title_similarity: 85          # rapidfuzz token-set ratio (0-100) for "same story" clustering
+  min_shared_words: 3           # ...and at least this many meaningful words in common
+  window_hours: 48              # Only cluster articles collected within this window
+  embedding_similarity: 0.88    # Cosine threshold, used when qa.embeddings_enabled is true
+
+# Topics, their subtopic keywords (used for rule-based tagging) and digest sections.
+topics:
+  finance:
+    label: "Finance & Markets"
+    emoji: "📈"
+    subtopics:
+      markets: ["stock market", stocks, equities, "S&P 500", Nasdaq, "Dow Jones", ASX, "Wall Street", rally, selloff, sell-off, futures]
+      macro: [inflation, CPI, GDP, "interest rate", "rate cut", "rate hike", unemployment, "jobs report", payrolls, recession, "bond yields", Treasury, tariff, currency]
+      central_banks: ["Federal Reserve", "the Fed", FOMC, RBA, "Reserve Bank", ECB, "Bank of England", "Bank of Japan", Powell, "monetary policy"]
+      earnings: [earnings, "quarterly results", revenue, guidance, EPS, "profit warning"]
+      crypto_markets: [bitcoin, ethereum, crypto, stablecoin, ETF]
+    sections:
+      - { title: "Watchlist", watchlist: true }
+      - { title: "Markets & Macro", subtopics: [] }   # empty list = everything not placed elsewhere
+  cyber:
+    label: "Cybersecurity"
+    emoji: "🛡️"
+    subtopics:
+      vulnerability: [vulnerability, vulnerabilities, CVE, patch, patches, flaw, "security update", "remote code execution", RCE, "privilege escalation", advisory]
+      exploited: [exploited, "in the wild", zero-day, 0-day, "actively exploited", KEV]
+      breach: [breach, breached, "data leak", leaked, "data exposure", "stolen data", "customer data", compromised]
+      ransomware: [ransomware, extortion, LockBit, Akira, Qilin, "Black Basta", Clop, "Scattered Spider"]
+      malware: [malware, trojan, botnet, infostealer, backdoor, spyware, loader]
+      crypto_security: [DeFi, drained, "stolen funds", "wallet drainer", "rug pull", bridge exploit, "crypto hack", "crypto heist", "private key"]
+      nation_state: [APT, "state-sponsored", "nation-state", espionage]
+    sections:
+      - { title: "Vulnerabilities & Exploits", subtopics: [vulnerability, exploited] }
+      - { title: "Breaches & Ransomware", subtopics: [breach, ransomware, malware, nation_state] }
+      - { title: "Crypto / Blockchain Security", subtopics: [crypto_security] }
+      - { title: "Other Security News", subtopics: [] }
+  iot:
+    label: "Embedded, IoT & Homelab"
+    emoji: "🏠"
+    subtopics:
+      smart_home: ["smart home", Matter, Thread, Zigbee, Z-Wave, "Home Assistant", HomeKit, Alexa, "Google Home", thermostat, "smart plug"]
+      hardware: ["Raspberry Pi", SBC, "single board computer", microcontroller, MCU, ESP32, Arduino, RISC-V, FPGA, firmware, embedded, PCB]
+      homelab: [homelab, "home lab", self-host, self-hosted, selfhosted, Proxmox, NAS, Docker, TrueNAS, Unraid, router, "mini PC", server]
+      beginner: [beginner, beginners, "getting started", "first homelab", "how to", tutorial, guide, "starter"]
+      iot_security: [vulnerability, exploit, botnet, CVE, "default password", backdoor]
+    sections:
+      - { title: "Smart Home", subtopics: [smart_home] }
+      - { title: "Hardware & Embedded", subtopics: [hardware] }
+      - { title: "Self-hosting & Homelab", subtopics: [homelab, beginner] }
+      - { title: "IoT Security", subtopics: [iot_security] }
+
+# Finance watchlist. `names` are company names/aliases matched in article text.
+# Short or common-word tickers (ON, IT, A, ALL) only match as $TICKER or "(NASDAQ: TICKER)".
+watchlist:
+  - ticker: NVDA
+    names: [Nvidia]
+  - ticker: AAPL
+    names: [Apple]
+  - ticker: MSFT
+    names: [Microsoft]
+  # ASX example:
+  # - ticker: BHP.AX
+  #   names: [BHP, "BHP Group"]
+
+# Generate per-ticker feeds for every watchlist entry.
+watchlist_feeds:
+  yahoo: true        # Yahoo Finance headline feed per ticker
+  google_news: true  # Google News query per ticker
+
+# Gear you own. Articles that mention any of these are flagged `affects_me: true`.
+# Empty for now. Examples: [Ubiquiti, Synology, TP-Link, "Home Assistant", Proxmox, OpenWrt, ESPHome]
+gear: []
+
+# Vendors/products tagged in cyber and IoT articles (front matter `vendors`).
+vendors: [Microsoft, Apple, Google, Cisco, Fortinet, Ivanti, "Palo Alto Networks", Citrix, VMware, Broadcom, Oracle, SAP, Atlassian, Juniper, SonicWall, "Check Point", F5, Zyxel, "D-Link", "TP-Link", Netgear, ASUS, Ubiquiti, Synology, QNAP, MikroTik, Linux, Android, Chrome, Firefox, WordPress, Jenkins, GitLab, GitHub, Okta, CrowdStrike, Veeam, "Home Assistant", Proxmox, OpenWrt, ESPHome, "Raspberry Pi", Espressif]
+
+llm:
+  default: ollama
+  # Choose provider + model per job. Mix freely, e.g. local for article summaries, an API for the digest.
+  jobs:
+    article_summary: { provider: ollama, model: "qwen3:14b", max_tokens: 400, temperature: 0.2 }
+    digest:          { provider: ollama, model: "qwen3:14b", max_tokens: 2500, temperature: 0.3 }
+    ask:             { provider: ollama, model: "qwen3:14b", max_tokens: 1500, temperature: 0.2 }
+    embeddings:      { provider: ollama, model: "nomic-embed-text" }
+  providers:
+    ollama:
+      base_url: "http://localhost:11434"
+      num_ctx: 16384      # Ollama's default context is small and silently truncates. Keep this explicit.
+      keep_alive: "10m"
+      think: false        # qwen3 "thinking" mode off: faster, and we only want the answer
+    openai_compat:        # OpenAI, OpenRouter, LM Studio, vLLM... anything OpenAI-compatible
+      base_url: "https://api.openai.com/v1"
+      api_key_env: OPENAI_API_KEY
+      context_tokens: 128000
+    openrouter:
+      type: openai_compat
+      base_url: "https://openrouter.ai/api/v1"
+      api_key_env: OPENROUTER_API_KEY
+      context_tokens: 128000
+    anthropic:
+      api_key_env: ANTHROPIC_API_KEY
+      context_tokens: 200000
+  fallback_provider: null  # e.g. openai_compat, used only if the job's provider is unreachable
+  fallback_model: null     # model to use with the fallback provider
+  request_timeout_seconds: 300
+
+notifications:
+  enabled: true
+  urls: []                 # Apprise URLs. Prefer APPRISE_URLS in .env for anything with a token.
+  urls_env: APPRISE_URLS
+  send_digest: true        # Send Top 5 + Flags after each digest
+  instant_alerts: true     # Alert immediately on new KEV entries and `affects_me` articles
+  ui_base_url: "http://127.0.0.1:8765"
+  max_message_chars: 1900  # Discord's limit is 2000
+
+web:
+  host: 127.0.0.1          # Change to 0.0.0.0 to allow other devices; then SIGNAL_WEB_PASSWORD is required
+  port: 8765
+
+retention:
+  cleanup_after_days: null # null = keep forever. A number deletes articles older than N days that never made a digest.
+
+summarize:
+  batch_size: 25           # Articles summarised per run
+  max_attempts: 3          # Give up on an article after this many failures
+  body_chars: 6000         # Article text sent to the model for the per-article summary
+  max_clusters_per_section: 25
+  clusters_per_chunk: 40
+
+qa:
+  save_sessions: true      # Save Q&A to vault/qa/
+  max_results: 12          # Articles retrieved per question
+  embeddings_enabled: false # Hybrid search with Ollama embeddings (run `ollama pull nomic-embed-text` first)

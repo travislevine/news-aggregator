@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>Example Security News</title>
+  <link>https://www.example-security.com/</link>
+  <description>Security news</description>
+  <item>
+    <title>Ivanti zero-day exploited in the wild (CVE-2026-12345)</title>
+    <link>https://www.example-security.com/news/ivanti-zero-day/?utm_source=rss&amp;utm_medium=feed</link>
+    <dc:creator>Jane Doe</dc:creator>
+    <pubDate>Tue, 03 Nov 2026 16:15:00 GMT</pubDate>
+    <description><![CDATA[<p>Ivanti warns customers that CVE-2026-12345 is being exploited.</p>]]></description>
+    <content:encoded><![CDATA[<p>Ivanti has warned customers that a critical vulnerability in Connect Secure, tracked as CVE-2026-12345, is being actively exploited in the wild. The flaw allows remote code execution without authentication.</p><p>Admins should patch immediately. Synology and Ubiquiti devices are not affected.</p><script>alert(1)</script>]]></content:encoded>
+  </item>
+  <item>
+    <title>Nvidia shares climb after record data center revenue</title>
+    <link>https://www.example-security.com/news/nvidia-earnings/#comments</link>
+    <pubDate>Tue, 03 Nov 2026 20:00:00 GMT</pubDate>
+    <description><![CDATA[Nvidia (NASDAQ: NVDA) reported record quarterly earnings on Tuesday.]]></description>
+  </item>
+  <item>
+    <title>Ransomware gang claims attack on hospital chain</title>
+    <link>https://www.example-security.com/news/hospital-ransomware/</link>
+    <pubDate>Tue, 03 Nov 2026 21:30:00 GMT</pubDate>
+    <description>The Akira ransomware group listed the hospital chain on its leak site.</description>
+  </item>
+</channel>
+</rss>

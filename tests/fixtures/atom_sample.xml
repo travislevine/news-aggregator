@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Home Assistant Blog</title>
+  <link href="https://www.home-assistant.io/"/>
+  <updated>2026-11-03T12:00:00+00:00</updated>
+  <id>https://www.home-assistant.io/</id>
+  <entry>
+    <title>Home Assistant 2026.11: Matter improvements</title>
+    <link href="https://www.home-assistant.io/blog/2026/11/03/release-202611/"/>
+    <id>https://www.home-assistant.io/blog/2026/11/03/release-202611/</id>
+    <updated>2026-11-03T12:00:00+00:00</updated>
+    <author><name>Home Assistant Team</name></author>
+    <summary>This release brings better Matter and Thread support for your smart home.</summary>
+    <content type="html">&lt;p&gt;This release brings better Matter and Thread support for your smart home. Zigbee users get faster pairing.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Getting started with a Raspberry Pi homelab</title>
+    <link href="https://www.home-assistant.io/blog/2026/11/02/pi-homelab/"/>
+    <id>https://www.home-assistant.io/blog/2026/11/02/pi-homelab/</id>
+    <updated>2026-11-02T09:00:00+00:00</updated>
+    <summary>A beginner guide to running Home Assistant on a Raspberry Pi in your first homelab.</summary>
+  </entry>
+</feed>

@@ -1,0 +1,466 @@
+# Signal news sources
+# ---------------------------------------------------------------------------
+# Fields: name, url, topic (finance | cyber | iot), type (rss | json | google_news | hnrss),
+# enabled, fetch_full_text, paywalled, priority (1 = best, 3 = lowest), notes.
+# Optional: query (google_news), keyword_filter (keep only matching items),
+# fallback_urls (tried by `signal validate-sources`), extra_topics (also tag as another topic).
+#
+# Run `signal validate-sources` to check every feed. Dead feeds are disabled with a note,
+# never silently dropped. Per-ticker watchlist feeds are generated from config.yaml.
+
+sources:
+  # ------------------------------------------------------------- Cybersecurity
+  - name: BleepingComputer
+    url: https://www.bleepingcomputer.com/feed/
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: The Hacker News
+    url: https://feeds.feedburner.com/TheHackersNews
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: Krebs on Security
+    url: https://krebsonsecurity.com/feed/
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 1
+    notes: "Feed carries full posts"
+  - name: SecurityWeek
+    url: https://www.securityweek.com/feed/
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: The Record
+    url: https://therecord.media/feed
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: "Recorded Future News"
+  - name: Dark Reading
+    url: https://www.darkreading.com/rss.xml
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: ""
+  - name: Ars Technica Security
+    url: https://feeds.arstechnica.com/arstechnica/security
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: SANS Internet Storm Center
+    url: https://isc.sans.edu/rssfeed_full.xml
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 2
+    notes: "Full-text diary feed"
+  - name: Schneier on Security
+    url: https://www.schneier.com/feed/atom/
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 2
+    notes: ""
+  - name: CISA Advisories
+    url: https://www.cisa.gov/cybersecurity-advisories/all.xml
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: CISA KEV
+    url: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+    topic: cyber
+    type: json
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 1
+    notes: "Known Exploited Vulnerabilities catalog. New entries become articles and are always in the digest."
+  - name: ASD ACSC Alerts
+    url: https://www.cyber.gov.au/rss/alerts
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: "Australian Signals Directorate"
+    fallback_urls:
+      - https://www.cyber.gov.au/acsc/view-all-content/alerts/rss
+  - name: Hacker News Security
+    url: https://hnrss.org/newest?q=security+OR+vulnerability+OR+CVE+OR+breach&points=100
+    topic: cyber
+    type: hnrss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: "Links to the article; the HN discussion URL is stored as hn_url"
+  - name: rekt.news
+    url: https://rekt.news/
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: "DeFi exploit post-mortems. Feed URL found by autodiscovery."
+    fallback_urls:
+      - https://rekt.news/rss/feed.xml
+  - name: Cointelegraph (security)
+    url: https://cointelegraph.com/rss
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: "Only security-relevant items are kept"
+    keyword_filter: [hack, hacked, exploit, drained, breach, stolen, vulnerability, phishing, rug, scam, attacker]
+  - name: CoinDesk (security)
+    url: https://www.coindesk.com/arc/outboundfeeds/rss/
+    topic: cyber
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: "Only security-relevant items are kept"
+    keyword_filter: [hack, hacked, exploit, drained, breach, stolen, vulnerability, phishing, rug, scam, attacker]
+  - name: "Google News: crypto hacks"
+    topic: cyber
+    type: google_news
+    query: 'crypto (hack OR exploit OR drained OR "stolen funds") when:1d'
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 3
+    notes: ""
+
+  # ------------------------------------------------------ Embedded / IoT / Homelab
+  - name: Hackaday
+    url: https://hackaday.com/blog/feed/
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 2
+    notes: ""
+  - name: CNX Software
+    url: https://www.cnx-software.com/feed/
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 1
+    notes: "SBCs, MCUs, embedded Linux"
+  - name: Hackster.io News
+    url: https://www.hackster.io/news
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: "Feed URL found by autodiscovery"
+  - name: Home Assistant Blog
+    url: https://www.home-assistant.io/atom.xml
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: selfh.st
+    url: https://selfh.st/rss/
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 1
+    notes: "Weekly self-hosting roundup. Good for beginners."
+  - name: ServeTheHome
+    url: https://www.servethehome.com/feed/
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: "Homelab and server hardware"
+  - name: Jeff Geerling
+    url: https://www.jeffgeerling.com/blog.xml
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 1
+    notes: "Beginner-friendly Pi and homelab projects"
+  - name: Raspberry Pi News
+    url: https://www.raspberrypi.com/news/feed/
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: Adafruit Blog
+    url: https://blog.adafruit.com/feed/
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 3
+    notes: "High volume"
+  - name: Embedded.com
+    url: https://www.embedded.com/feed/
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: ""
+  - name: The Verge Smart Home
+    url: https://www.theverge.com/rss/smart-home/index.xml
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: ""
+  - name: LWN.net
+    url: https://lwn.net/headlines/rss
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 2
+    notes: "Linux/kernel. Some items are subscriber-only, so full text is not fetched."
+  - name: r/homelab
+    url: https://www.reddit.com/r/homelab/top/.rss?t=day
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 3
+    notes: "Reddit rate-limits; 429s are tolerated"
+  - name: r/selfhosted
+    url: https://www.reddit.com/r/selfhosted/top/.rss?t=day
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 3
+    notes: ""
+  - name: r/homeassistant
+    url: https://www.reddit.com/r/homeassistant/top/.rss?t=day
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 3
+    notes: ""
+  - name: XDA Developers (homelab)
+    url: https://www.xda-developers.com/feed/
+    topic: iot
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 3
+    notes: "Added for beginners: lots of approachable homelab and self-hosting guides. Filtered by keyword."
+    keyword_filter: [homelab, "home lab", self-host, selfhost, NAS, Proxmox, "Raspberry Pi", Docker, "Home Assistant", server, router, TrueNAS, Unraid, "mini PC"]
+  - name: "Google News: homelab for beginners"
+    topic: iot
+    type: google_news
+    query: '(homelab OR "home lab" OR "self-hosted" OR "home server") (beginner OR "getting started" OR guide) when:7d'
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 3
+    notes: "Added for beginners"
+  - name: "Google News: Matter/Thread/Zigbee"
+    topic: iot
+    type: google_news
+    query: "(Matter OR Thread OR Zigbee OR Z-Wave) smart home when:1d"
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 3
+    notes: ""
+  - name: "Google News: IoT security"
+    topic: iot
+    type: google_news
+    query: "(IoT OR router OR NAS OR camera) vulnerability when:1d"
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 3
+    notes: "Tagged as both iot and cyber"
+    extra_topics: [cyber]
+
+  # ------------------------------------------------------------------- Finance
+  - name: CNBC Top News
+    url: https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: CNBC Finance
+    url: https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: MarketWatch Top Stories
+    url: https://feeds.content.dowjones.io/public/rss/mw_topstories
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: MarketWatch Bulletins
+    url: https://feeds.marketwatch.com/marketwatch/bulletins
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 2
+    notes: "Some MarketWatch section feeds are reportedly dead"
+  - name: WSJ Markets
+    url: https://feeds.a.dj.com/rss/RSSMarketsMain.xml
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: true
+    priority: 1
+    notes: "Paywalled: headline and feed summary only"
+  - name: Yahoo Finance
+    url: https://finance.yahoo.com/news/rssindex
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: ""
+  - name: Seeking Alpha Market Currents
+    url: https://seekingalpha.com/market_currents.xml
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: true
+    priority: 2
+    notes: "Mostly paywalled; feed summary only"
+  - name: Nasdaq Markets
+    url: https://www.nasdaq.com/feed/rssoutbound?category=Markets
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: ""
+  - name: "Reuters (via Google News)"
+    topic: finance
+    type: google_news
+    query: "site:reuters.com (markets OR stocks OR economy) when:1d"
+    enabled: true
+    fetch_full_text: false
+    paywalled: false
+    priority: 1
+    notes: "Reuters has no public RSS"
+  - name: Federal Reserve
+    url: https://www.federalreserve.gov/feeds/press_all.xml
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: "Press releases"
+  - name: RBA Media Releases
+    url: https://www.rba.gov.au/rss/rss-cb-media-releases.xml
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 1
+    notes: ""
+  - name: The Economist Finance & Economics
+    url: https://www.economist.com/finance-and-economics/rss.xml
+    topic: finance
+    type: rss
+    enabled: true
+    fetch_full_text: false
+    paywalled: true
+    priority: 2
+    notes: "Paywalled: headline and feed summary only"
+  - name: "Google News: ASX"
+    topic: finance
+    type: google_news
+    query: "ASX 200 when:1d"
+    locale: { hl: en-AU, gl: AU, ceid: "AU:en" }
+    enabled: true
+    fetch_full_text: true
+    paywalled: false
+    priority: 2
+    notes: ""

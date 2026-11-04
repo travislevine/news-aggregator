@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>Hacker News: Newest</title>
+  <link>https://news.ycombinator.com/newest</link>
+  <item>
+    <title>Critical OpenSSH vulnerability allows remote root</title>
+    <description><![CDATA[<p>Article URL: <a href="https://blog.example.org/openssh-vuln">https://blog.example.org/openssh-vuln</a></p><p>Comments URL: <a href="https://news.ycombinator.com/item?id=41000001">https://news.ycombinator.com/item?id=41000001</a></p><p>Points: 412</p>]]></description>
+    <pubDate>Tue, 03 Nov 2026 18:00:00 +0000</pubDate>
+    <link>https://blog.example.org/openssh-vuln</link>
+    <dc:creator>someone</dc:creator>
+    <comments>https://news.ycombinator.com/item?id=41000001</comments>
+  </item>
+</channel>
+</rss>
