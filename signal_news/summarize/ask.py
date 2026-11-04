@@ -321,17 +321,23 @@ def answer_events(
 
 def answer_stream(ctx: AppContext, question: str, topic: str | None = None) -> Iterator[str]:
     """CLI helper: stream the answer text, then the source list."""
-    final = ""
+    final, streamed = "", False
     for event, data in answer_events(ctx, question, topic=topic):
         if event == "meta":
             yield f"({data})\n\n"
         elif event == "token":
+            streamed = True
             yield data
         elif event == "error":
             yield f"\n{data}"
         elif event == "done":
             final = data
-    if "**Sources**" in final:
+    from signal_news.notify import to_message_markdown
+
+    final = to_message_markdown(final)  # wikilinks -> plain titles/links for the terminal
+    if not streamed:
+        yield final  # model unavailable or nothing found: show the full message
+    elif "**Sources**" in final:
         yield "\n\n" + final[final.index("**Sources**") :].replace("**", "")
 
 

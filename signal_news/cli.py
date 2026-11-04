@@ -47,7 +47,7 @@ def collect(
     from signal_news.jobs import run_collect
 
     ctx = _ctx(config)
-    res = run_collect(ctx, only=source, progress=lambda m: console.print(f"[dim]{m}[/dim]"))
+    res = run_collect(ctx, only=source)
     if res is None:
         raise typer.Exit(1)
     c = res.counts
@@ -76,7 +76,7 @@ def summarize(
     from signal_news.jobs import run_summarize
 
     ctx = _ctx(config)
-    res = run_summarize(ctx, limit=limit, progress=lambda m: console.print(f"[dim]{m}[/dim]"))
+    res = run_summarize(ctx, limit=limit)
     if res is None:
         raise typer.Exit(1)
     console.print(
@@ -105,7 +105,6 @@ def digest(
         force=force,
         use_llm=not no_llm,
         notify=notify,
-        progress=lambda m: console.print(f"[dim]{m}[/dim]"),
     )
     if res is None:
         raise typer.Exit(1)

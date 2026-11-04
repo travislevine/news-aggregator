@@ -97,3 +97,11 @@ def test_scheduler_starts_with_expected_jobs(ctx):
         assert collect_job.trigger.interval == timedelta(minutes=60)
     finally:
         s.shutdown()
+
+
+def test_scheduled_digest_skips_empty_window(ctx):
+    res = jobs.run_digest(ctx, use_llm=False, notify=False)
+    assert res is None and "No new articles" in jobs.STATE.message
+    assert not list(ctx.vault.digests_dir.glob("*.md"))
+    forced = jobs.run_digest(ctx, use_llm=False, notify=False, force=True)
+    assert forced is not None and forced.path.exists()

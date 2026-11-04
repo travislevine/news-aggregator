@@ -33,7 +33,7 @@ def setup_logging(logs_dir: Path, level: int = logging.INFO, console: bool = Tru
         ch.setFormatter(logging.Formatter("%(levelname)-7s %(message)s"))
         ch.setLevel(level)
         root.addHandler(ch)
-    for noisy in ("httpx", "httpcore", "trafilatura", "readability", "apscheduler.executors"):
+    for noisy in ("httpx", "httpcore", "trafilatura", "readability", "apscheduler"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
     _LOGGING_READY = True
 

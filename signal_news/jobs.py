@@ -201,6 +201,16 @@ def run_digest(
         ctx.db.finish_run(run_id, status="skipped", message=msg)
         _end(True, msg)
         return None
+    if not force:
+        from signal_news.summarize.digest import compute_window
+        from signal_news.timeutil import to_utc_iso
+
+        win = compute_window(ctx, ctx.cfg.now())
+        if not ctx.db.articles_between(to_utc_iso(win.start), to_utc_iso(win.end)):
+            msg = "No new articles since the last digest; will try again after the next collection"
+            ctx.db.finish_run(run_id, status="skipped", message=msg)
+            _end(True, msg)
+            return None
     try:
         with ctx.db.lock("digest", ttl_minutes=90):
             # Catch up on summaries first so the digest has them.
