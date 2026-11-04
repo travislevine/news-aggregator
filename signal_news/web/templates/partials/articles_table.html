@@ -1,0 +1,29 @@
+<div class="scroll-x">
+<table class="compact">
+  <thead><tr><th>Collected</th><th>Topic</th><th>Source</th><th>Title</th><th>Tags</th></tr></thead>
+  <tbody>
+  {% for a in rows %}
+    <tr>
+      <td class="muted">{{ a.collected|dt }}</td>
+      <td>{{ a.topic }}</td>
+      <td>{{ a.source }}</td>
+      <td class="title"><a href="/articles/{{ a.id }}">{{ a.title }}</a>
+        {% if a.summary %}<br><span class="small muted">{{ a.summary }}</span>{% endif %}</td>
+      <td>
+        {% if a.kev %}<span class="badge kev">KEV</span>{% endif %}
+        {% if a.affects_me %}<span class="badge me">affects me</span>{% endif %}
+        {% for t in a.tickers %}<span class="badge ticker">{{ t }}</span>{% endfor %}
+        {% for c in a.cves[:3] %}<span class="badge">{{ c }}</span>{% endfor %}
+        {% if a.importance %}<span class="badge">★{{ a.importance }}</span>{% endif %}
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5" class="muted">No articles match.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+<div class="toolbar">
+  {% if offset > 0 %}<a href="{{ page_url(offset - 50) }}">← Newer</a>{% endif %}
+  {% if rows|length == 50 %}<a href="{{ page_url(offset + 50) }}">Older →</a>{% endif %}
+</div>

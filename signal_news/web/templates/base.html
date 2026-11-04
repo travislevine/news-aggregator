@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Signal{% endblock %} · Signal</title>
+  <script>
+    try { var t = localStorage.getItem("signal-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="/static/pico.min.css">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/htmx.min.js" defer></script>
+</head>
+<body>
+<header class="container">
+  <nav class="top">
+    <ul><li><a class="brand" href="/">📡 Signal</a></li></ul>
+    <ul>
+      <li><a href="/" {% if active == 'today' %}aria-current="page"{% endif %}>Today</a></li>
+      <li><a href="/digests" {% if active == 'digests' %}aria-current="page"{% endif %}>Digests</a></li>
+      <li><a href="/articles" {% if active == 'articles' %}aria-current="page"{% endif %}>Articles</a></li>
+      <li><a href="/ask" {% if active == 'ask' %}aria-current="page"{% endif %}>Ask</a></li>
+      <li><a href="/sources" {% if active == 'sources' %}aria-current="page"{% endif %}>Sources</a></li>
+      <li><a href="/settings" {% if active == 'settings' %}aria-current="page"{% endif %}>Settings</a></li>
+      <li><a href="#" id="theme-toggle" title="Toggle light/dark">🌓</a></li>
+    </ul>
+  </nav>
+</header>
+<main class="container">
+{% block content %}{% endblock %}
+</main>
+<footer class="container small muted">Signal · local news digest · vault: {{ cfg.vault }}</footer>
+<script>
+  document.getElementById("theme-toggle").addEventListener("click", function (e) {
+    e.preventDefault();
+    var root = document.documentElement;
+    var next = root.dataset.theme === "dark" ? "light" : "dark";
+    root.dataset.theme = next;
+    try { localStorage.setItem("signal-theme", next); } catch (err) {}
+  });
+</script>
+</body>
+</html>

@@ -310,7 +310,7 @@ def build_flags(ctx: AppContext, clusters: list[Cluster], book: RefBook) -> str:
                 text += f". What to do: {action}"
             if due:
                 text += f" (US federal deadline {due})"
-            kev_lines.append(f"  - {text} {book.link(a)}")
+            kev_lines.append(f"    - {text} {book.link(a)}")
             break
     mentioned: list[str] = []
     for c in clusters:
@@ -319,7 +319,7 @@ def build_flags(ctx: AppContext, clusters: list[Cluster], book: RefBook) -> str:
             if cves:
                 seen_cves.update(cves)
                 mentioned.append(
-                    f"  - {', '.join(cves)} in the news: {c.rep['title']} {book.link(c.rep)}"
+                    f"    - {', '.join(cves)} in the news: {c.rep['title']} {book.link(c.rep)}"
                 )
     if kev_lines or mentioned:
         lines.append("- **Actively exploited (KEV):**")
@@ -338,7 +338,7 @@ def build_flags(ctx: AppContext, clusters: list[Cluster], book: RefBook) -> str:
                     or []
                 )
                 label = ", ".join(vendors[:3]) or "Your gear"
-                gear_lines.append(f"  - **{label}**: {c.rep['title']} {book.link(c.rep)}")
+                gear_lines.append(f"    - **{label}**: {c.rep['title']} {book.link(c.rep)}")
         if gear_lines:
             lines.append("- **Affects your gear:**")
             lines += gear_lines[:10]
@@ -355,7 +355,7 @@ def build_flags(ctx: AppContext, clusters: list[Cluster], book: RefBook) -> str:
         best = max(related, key=lambda c: c.score)
         reason = best.summary or best.rep["title"]
         senti = f" ({best.rep['sentiment']})" if best.rep.get("sentiment") else ""
-        movers.append(f"  - **{tick}**{senti}: {reason} {book.link(best.rep)}")
+        movers.append(f"    - **{tick}**{senti}: {reason} {book.link(best.rep)}")
     if movers:
         lines.append("- **Watchlist movers:**")
         lines += movers

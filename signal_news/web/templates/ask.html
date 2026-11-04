@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Ask{% endblock %}
+{% block content %}
+<h2>Ask about the news</h2>
+<p class="muted small">Answers come only from articles Signal has collected, with citations. Try:
+  “What happened with Ivanti this week?”, “Summarise all NVDA news since Monday”, “Any homelab beginner guides in the last 3 days?”</p>
+<form id="ask-form">
+  <fieldset role="group">
+    <input name="q" id="ask-q" placeholder="Ask a question…" autocomplete="off" required>
+    <select name="topic" id="ask-topic" style="max-width:12rem">
+      <option value="">All topics</option>
+      {% for t in topics %}<option value="{{ t }}">{{ topic_label(t) }}</option>{% endfor %}
+    </select>
+    <button type="submit" id="ask-btn">Ask</button>
+  </fieldset>
+</form>
+<div id="ask-meta" class="small muted"></div>
+<article id="ask-answer" class="answer" hidden></article>
+<script>
+(function () {
+  var form = document.getElementById("ask-form");
+  var out = document.getElementById("ask-answer");
+  var meta = document.getElementById("ask-meta");
+  var btn = document.getElementById("ask-btn");
+  var es = null;
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (es) es.close();
+    var q = document.getElementById("ask-q").value.trim();
+    if (!q) return;
+    var topic = document.getElementById("ask-topic").value;
+    out.hidden = false; out.classList.remove("rendered"); out.textContent = ""; meta.textContent = "Searching…";
+    btn.setAttribute("aria-busy", "true");
+    es = new EventSource("/ask/stream?q=" + encodeURIComponent(q) + (topic ? "&topic=" + encodeURIComponent(topic) : ""));
+    es.addEventListener("meta", function (ev) { meta.textContent = ev.data; });
+    es.addEventListener("token", function (ev) { out.textContent += ev.data; });
+    es.addEventListener("done", function (ev) {
+      try { out.innerHTML = JSON.parse(ev.data).html; out.classList.add("rendered"); } catch (err) {}
+      es.close(); btn.removeAttribute("aria-busy");
+    });
+    es.addEventListener("error", function (ev) {
+      if (ev.data) { out.textContent += "\n\n⚠️ " + ev.data; }
+      es.close(); btn.removeAttribute("aria-busy");
+    });
+  });
+})();
+</script>
+{% endblock %}

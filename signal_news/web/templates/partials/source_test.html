@@ -1,0 +1,6 @@
+{% if r.ok %}
+  <span class="badge ok">OK</span> {{ r.items }} items{% if r.newest %}, newest {{ r.newest|dt }}{% endif %}
+  {% if r.action %}<br>Suggestion: {{ r.action }} {{ r.new_url or r.new_query or "" }} (run <code>signal validate-sources</code> to apply){% endif %}
+{% else %}
+  <span class="badge failing">failed</span> {{ r.error }}
+{% endif %}

@@ -1,0 +1,27 @@
+<tr>
+  <td>
+    <strong>{{ r.src.name }}</strong><br>
+    <span class="small muted">{{ r.src.type }} · {{ topic_label(r.src.topic) }} · P{{ r.src.priority }}{% if r.src.paywalled %} · paywalled{% endif %}{% if r.src.generated %} · from watchlist{% endif %}</span>
+    {% if r.src.notes %}<br><span class="small muted">{{ r.src.notes }}</span>{% endif %}
+  </td>
+  <td><span class="badge {{ r.health }}">{{ r.health }}</span>
+    {% if r.state.consecutive_failures %}<br><span class="small">{{ r.state.consecutive_failures }} failures</span>{% endif %}</td>
+  <td class="small">{{ r.state.last_success|ago if r.state.last_success else "never" }}<br>
+    <span class="muted">{{ r.state.items_last_run or 0 }} items, {{ r.state.new_last_run or 0 }} new</span></td>
+  <td class="small muted">{{ r.state.newest_item|dt if r.state.newest_item else "-" }}</td>
+  <td class="err">{{ r.state.last_error or "" }}</td>
+  <td>
+    {% if not r.src.generated %}
+    <form hx-post="/sources/toggle" hx-target="closest tr" hx-swap="outerHTML" style="margin:0">
+      <input type="hidden" name="name" value="{{ r.src.name }}">
+      <input type="hidden" name="enabled" value="{{ '0' if r.src.enabled else '1' }}">
+      <button class="outline secondary" style="padding:0.2rem 0.5rem;font-size:0.8rem">{{ "Disable" if r.src.enabled else "Enable" }}</button>
+    </form>
+    {% endif %}
+    <form hx-post="/sources/test" hx-target="next .test-result" style="margin:0.3rem 0 0">
+      <input type="hidden" name="name" value="{{ r.src.name }}">
+      <button class="outline" style="padding:0.2rem 0.5rem;font-size:0.8rem">Test</button>
+    </form>
+    <div class="test-result small"></div>
+  </td>
+</tr>

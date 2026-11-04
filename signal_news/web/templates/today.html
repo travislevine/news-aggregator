@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Today{% endblock %}
+{% block content %}
+<div class="toolbar">
+  <button hx-post="/actions/collect" hx-target="#job-status" hx-swap="outerHTML">Collect now</button>
+  <button class="secondary" hx-post="/actions/summarize" hx-target="#job-status" hx-swap="outerHTML">Summarise now</button>
+  <button class="contrast" hx-post="/actions/digest" hx-target="#job-status" hx-swap="outerHTML">Regenerate digest</button>
+  {% include "partials/job_status.html" %}
+</div>
+<div class="stats muted">
+  <span><b>{{ stats.articles_24h }}</b> articles in 24 h</span>
+  <span><b>{{ stats.total }}</b> total</span>
+  <span><b>{{ stats.pending }}</b> awaiting summary</span>
+  <span>Last collection: <b>{{ stats.last_collect.started|ago if stats.last_collect else "never" }}</b>
+    {% if stats.last_collect and stats.last_collect.message %}({{ stats.last_collect.message }}){% endif %}</span>
+  {% if next_runs %}<span>Next collect: <b>{{ next_runs.get('collect') or '-' }}</b> · digest: <b>{{ next_runs.get('digest') or '-' }}</b></span>{% endif %}
+</div>
+<hr>
+{% if latest %}
+  {% if not is_today %}<p class="muted">Today's digest isn't ready yet. Showing the latest one ({{ latest.date }}).</p>{% endif %}
+  <article class="digest">
+    {% if flags %}
+      <section class="flags"><h2>{{ flags[0] }}</h2>{{ flags[1]|md }}</section>
+    {% endif %}
+    {% for heading, body in sections %}
+      {% if heading %}<h2>{{ heading }}</h2>{% endif %}
+      {{ body|md }}
+    {% endfor %}
+  </article>
+{% else %}
+  <article>
+    <h3>No digest yet</h3>
+    <p>Signal collects news every hour while it's running and writes a digest at {{ cfg.schedule.digest_time }}.
+      Click <b>Collect now</b>, then <b>Regenerate digest</b> to build one straight away.</p>
+  </article>
+{% endif %}
+{% endblock %}

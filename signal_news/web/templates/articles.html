@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Articles{% endblock %}
+{% block content %}
+<h2>Articles</h2>
+<form class="filters" hx-get="/articles" hx-target="#articles-table" hx-push-url="true"
+      hx-trigger="change, input changed delay:400ms from:input[name=q], submit">
+  <label>Search<input type="search" name="q" value="{{ q.get('q', '') }}" placeholder="e.g. ransomware"></label>
+  <label>Topic
+    <select name="topic"><option value="">All</option>
+      {% for t in topics %}<option value="{{ t }}" {% if q.get('topic') == t %}selected{% endif %}>{{ topic_label(t) }}</option>{% endfor %}
+    </select></label>
+  <label>Source
+    <select name="source"><option value="">All</option>
+      {% for s in sources %}<option {% if q.get('source') == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select></label>
+  <label>From<input type="date" name="date_from" value="{{ q.get('date_from', '') }}"></label>
+  <label>To<input type="date" name="date_to" value="{{ q.get('date_to', '') }}"></label>
+  <label>Ticker<input name="ticker" value="{{ q.get('ticker', '') }}" placeholder="NVDA"></label>
+  <label>CVE<input name="cve" value="{{ q.get('cve', '') }}" placeholder="CVE-2026-..."></label>
+  <label><input type="checkbox" name="kev" value="1" {% if q.get('kev') %}checked{% endif %}> KEV only</label>
+  <label><input type="checkbox" name="affects_me" value="1" {% if q.get('affects_me') %}checked{% endif %}> Affects me</label>
+</form>
+<div id="articles-table">{% include "partials/articles_table.html" %}</div>
+{% endblock %}

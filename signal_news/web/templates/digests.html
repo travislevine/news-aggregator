@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Digests{% endblock %}
+{% block content %}
+<h2>Digests</h2>
+{% if digests %}
+<table class="compact">
+  <thead><tr><th>Date</th><th>Window</th><th>Articles</th><th>Model</th></tr></thead>
+  <tbody>
+  {% for d in digests %}
+    <tr>
+      <td><a href="/digests/{{ d.date }}">{{ d.date }}</a></td>
+      <td class="muted">{{ d.window_start|dt }} → {{ d.window_end|dt }}</td>
+      <td>{{ d.articles }}</td>
+      <td class="muted">{{ d.model }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}<p class="muted">No digests yet.</p>{% endif %}
+{% endblock %}

@@ -63,6 +63,14 @@ def _begin(name: str) -> Callable[[str], None]:
     return progress
 
 
+def mark_queued(name: str) -> None:
+    """Show a job as running right away, before its thread starts (so the UI starts polling)."""
+    with _state_lock:
+        STATE.name, STATE.running, STATE.message = name, True, "queued"
+        STATE.started, STATE.finished, STATE.ok = time.time(), 0.0, None
+        STATE.log = []
+
+
 def _end(ok: bool, msg: str) -> None:
     with _state_lock:
         STATE.running, STATE.ok, STATE.message, STATE.finished = False, ok, msg, time.time()

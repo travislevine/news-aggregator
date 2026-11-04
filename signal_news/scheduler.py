@@ -23,7 +23,15 @@ from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
 from signal_news.context import AppContext
-from signal_news.jobs import STATE, digest_due, run_cleanup, run_collect, run_digest, run_summarize
+from signal_news.jobs import (
+    STATE,
+    digest_due,
+    mark_queued,
+    run_cleanup,
+    run_collect,
+    run_digest,
+    run_summarize,
+)
 
 log = logging.getLogger(__name__)
 
@@ -152,6 +160,7 @@ class SignalScheduler:
         fn = targets.get(kind)
         if fn is None:
             return False
+        mark_queued(kind)
         threading.Thread(target=fn, name=f"signal-{kind}", daemon=True).start()
         return True
 
@@ -177,5 +186,6 @@ def run_background_job(ctx: AppContext, kind: str, **kwargs: Any) -> bool:
     fn = targets.get(kind)
     if fn is None:
         return False
+    mark_queued(kind)
     threading.Thread(target=fn, name=f"signal-{kind}", daemon=True).start()
     return True

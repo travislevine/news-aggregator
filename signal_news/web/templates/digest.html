@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Digest {{ day }}{% endblock %}
+{% block content %}
+<p><a href="/digests">← All digests</a></p>
+<article class="digest">{{ content|md }}</article>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<h2>Settings</h2>
+<p class="muted small">Changes are written to <code>{{ cfg.config_file or "config.yaml" }}</code>. Secrets (API keys, tokens) belong in <code>.env</code>.</p>
+
+<div class="grid-2">
+<article>
+  <h3>Watchlists</h3>
+  <form hx-post="/settings/watchlist" hx-target="#watch-result">
+    <label>Finance tickers <span class="muted small">(one per line: <code>TICKER: Company, Alias</code>)</span>
+      <textarea name="watchlist" rows="7" placeholder="NVDA: Nvidia&#10;BHP.AX: BHP, BHP Group">{{ watch_text }}</textarea></label>
+    <label>My gear <span class="muted small">(one per line; articles mentioning these are flagged "affects me")</span>
+      <textarea name="gear" rows="5" placeholder="Ubiquiti&#10;Synology&#10;Home Assistant&#10;Proxmox">{{ gear_text }}</textarea></label>
+    <button type="submit">Save watchlists</button>
+    <div id="watch-result"></div>
+  </form>
+</article>
+
+<article>
+  <h3>Schedule</h3>
+  <p class="small muted">Time zone: {{ cfg.timezone }}. On start, Signal collects immediately and builds today's digest if it's overdue.</p>
+  <form hx-post="/settings/schedule" hx-target="#schedule-result">
+    <label>Collect every (minutes)<input type="number" name="collect_interval_minutes" min="10" max="1440" value="{{ cfg.schedule.collect_interval_minutes }}"></label>
+    <label>Daily digest time<input type="time" name="digest_time" value="{{ cfg.schedule.digest_time }}"></label>
+    <button type="submit">Save schedule</button>
+    <div id="schedule-result"></div>
+  </form>
+</article>
+</div>
+
+<article>
+  <h3>Models</h3>
+  <form hx-post="/settings/llm" hx-target="#llm-result">
+    <div class="scroll-x">
+    <table class="compact">
+      <thead><tr><th>Job</th><th>Provider</th><th>Model</th><th></th></tr></thead>
+      <tbody>
+      {% for name, js in jobs.items() %}
+        <tr>
+          <td>{{ name.replace('_', ' ') }}</td>
+          <td><select name="{{ name }}_provider" style="margin:0">
+            {% for p in providers %}<option value="{{ p }}" {% if js.provider == p %}selected{% endif %}>{{ p }}</option>{% endfor %}
+          </select></td>
+          <td><input name="{{ name }}_model" value="{{ js.model or '' }}" style="margin:0"></td>
+          <td><button type="button" class="outline" style="padding:0.2rem 0.6rem;font-size:0.85rem;margin:0"
+                hx-post="/settings/test-llm" hx-vals='{"job": "{{ name }}"}' hx-target="#llm-test-{{ name }}">Test connection</button>
+              <div id="llm-test-{{ name }}"></div></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    <label><input type="checkbox" name="embeddings_enabled" value="1" {% if cfg.qa.embeddings_enabled %}checked{% endif %}>
+      Use embeddings for Q&amp;A and clustering (run <code>ollama pull nomic-embed-text</code> first)</label>
+    <p class="small muted">Provider details (URLs, num_ctx, API key variable names) are in <code>config.yaml</code> under <code>llm.providers</code>.</p>
+    <button type="submit">Save models</button>
+    <div id="llm-result"></div>
+  </form>
+</article>
+
+<article>
+  <h3>Notifications</h3>
+  <form hx-post="/settings/notifications" hx-target="#notify-result">
+    <label>Apprise URLs <span class="muted small">(one per line, e.g. <code>ntfy://my-signal-topic</code>, <code>discord://webhook_id/webhook_token</code>)</span>
+      <textarea name="urls" rows="3">{{ cfg.notifications.urls|join('\n') }}</textarea></label>
+    {% if env_urls %}<p class="small">Also sending to the URLs in <code>{{ cfg.notifications.urls_env }}</code> from <code>.env</code> (hidden here).</p>{% endif %}
+    <label><input type="checkbox" name="send_digest" value="1" {% if cfg.notifications.send_digest %}checked{% endif %}> Send the Top 5 + Flags after each digest</label>
+    <label><input type="checkbox" name="instant_alerts" value="1" {% if cfg.notifications.instant_alerts %}checked{% endif %}> Instant alerts for new KEV entries and "affects me" articles</label>
+    <label>Link to this UI in messages<input name="ui_base_url" value="{{ cfg.notifications.ui_base_url }}"></label>
+    <div class="toolbar">
+      <button type="submit">Save notifications</button>
+      <button type="button" class="outline" hx-post="/settings/test-notify" hx-target="#notify-result">Send test</button>
+    </div>
+    <div id="notify-result"></div>
+  </form>
+</article>
+{% endblock %}

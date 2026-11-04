@@ -1,0 +1,10 @@
+<div id="job-status" class="job {% if job.running %}running{% elif job.ok %}ok{% elif job.ok is not none %}fail{% endif %}"
+     {% if job.running %}hx-get="/actions/status" hx-trigger="every 2s" hx-swap="outerHTML"{% endif %}>
+  {% if job.name %}
+    <strong>{{ job.name|capitalize }}</strong>: {{ job.message }}
+    {% if job.elapsed %}<span class="muted">({{ job.elapsed }}s)</span>{% endif %}
+    {% if not job.running and job.ok is not none %}<a href="" class="small">refresh page</a>{% endif %}
+  {% else %}
+    <span class="muted">No job running.</span>
+  {% endif %}
+</div>

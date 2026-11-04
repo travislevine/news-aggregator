@@ -319,6 +319,16 @@ class Database:
             ).fetchall()
         return [dict(r) for r in rows]
 
+    def articles_in_cluster(
+        self, cluster_id: str, exclude: str | None = None, limit: int = 20
+    ) -> list[dict[str, Any]]:
+        with self.connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM articles WHERE cluster_id = ? AND id != ? ORDER BY priority, collected LIMIT ?",
+                (cluster_id, exclude or "", limit),
+            ).fetchall()
+        return [row_to_article(r) for r in rows]
+
     def articles_needing_summary(self, limit: int, max_attempts: int) -> list[dict[str, Any]]:
         with self.connect() as conn:
             rows = conn.execute(

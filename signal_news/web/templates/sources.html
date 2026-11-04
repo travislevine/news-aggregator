@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Sources{% endblock %}
+{% block content %}
+<h2>Sources</h2>
+<p class="muted small">From <code>sources.yaml</code> plus per-ticker feeds generated from your watchlist.
+  Sources that fail {{ cfg.collection.auto_disable_after_failures }} times in a row are disabled automatically and listed in the next digest.</p>
+<details>
+  <summary role="button" class="outline">Add a source</summary>
+  <form hx-post="/sources/add" hx-target="#add-result">
+    <div class="grid">
+      <label>Name<input name="name" required placeholder="My favourite blog"></label>
+      <label>Type
+        <select name="type"><option value="rss">RSS/Atom (or page URL to autodiscover)</option><option value="google_news">Google News query</option></select></label>
+      <label>Topic<select name="topic">{% for t in topics %}<option value="{{ t }}">{{ topic_label(t) }}</option>{% endfor %}</select></label>
+      <label>Priority<select name="priority"><option value="1">1 (best)</option><option value="2" selected>2</option><option value="3">3</option></select></label>
+    </div>
+    <label>Feed or page URL<input name="url" placeholder="https://example.com/ or https://example.com/feed/"></label>
+    <label>Google News query (for Google News type)<input name="query" placeholder='"home assistant" when:1d'></label>
+    <label><input type="checkbox" name="fetch_full_text" value="1"> Fetch full article text when the feed is short</label>
+    <label><input type="checkbox" name="paywalled" value="1"> Paywalled (store headline and summary only)</label>
+    <button type="submit">Add source</button>
+    <div id="add-result"></div>
+  </form>
+</details>
+<div class="scroll-x">
+<table class="compact">
+  <thead><tr><th>Source</th><th>Health</th><th>Last success</th><th>Newest item</th><th>Last error</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rows %}{% include "partials/source_row.html" %}{% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h3>Recent runs</h3>
+<div class="scroll-x">
+<table class="compact">
+  <thead><tr><th>Job</th><th>Started</th><th>Status</th><th>Result</th><th>Errors</th></tr></thead>
+  <tbody>
+  {% for run in runs %}
+    <tr>
+      <td>{{ run.kind }}</td>
+      <td class="muted">{{ run.started|dt }}</td>
+      <td><span class="badge {{ 'ok' if run.status == 'ok' else ('failing' if run.status in ('failed', 'interrupted') else '') }}">{{ run.status }}</span></td>
+      <td class="small">{{ run.message or "" }}
+        {% if run.counts %}<br><span class="muted">{% for k, v in run.counts.items() %}{{ k }}: {{ v }}{% if not loop.last %}, {% endif %}{% endfor %}</span>{% endif %}</td>
+      <td class="small">{% if run.errors %}<details><summary>{{ run.errors|length }} errors</summary>
+        <ul>{% for e in run.errors[:30] %}<li class="err">{{ e }}</li>{% endfor %}</ul></details>{% endif %}</td>
+    </tr>
+  {% else %}<tr><td colspan="5" class="muted">No runs yet.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

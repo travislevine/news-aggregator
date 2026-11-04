@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ art.title }}{% endblock %}
+{% block content %}
+<p><a href="/articles">← Articles</a></p>
+<article>
+  <header>
+    <h2 style="margin-bottom:0.3rem">{{ art.title }}</h2>
+    <div class="small muted">
+      {{ art.source }} · published {{ art.published|dt }} · collected {{ art.collected|dt }} · {{ topic_label(art.topic) }}
+      {% if not art.full_text %} · feed summary only{% endif %}
+    </div>
+    <div style="margin-top:0.4rem">
+      <a href="{{ art.url }}" target="_blank" rel="noopener noreferrer" role="button" class="outline" style="padding:0.25rem 0.75rem;font-size:0.9rem">Open original ↗</a>
+      {% if art.hn_url %}<a href="{{ art.hn_url }}" target="_blank" rel="noopener noreferrer" class="small">HN discussion ↗</a>{% endif %}
+    </div>
+    <div style="margin-top:0.5rem">
+      {% if art.kev %}<span class="badge kev">KEV</span>{% endif %}
+      {% if art.affects_me %}<span class="badge me">affects me</span>{% endif %}
+      {% for t in art.tickers %}<span class="badge ticker">{{ t }}</span>{% endfor %}
+      {% for c in art.cves %}<span class="badge">{{ c }}</span>{% endfor %}
+      {% for v in art.vendors %}<span class="badge">{{ v }}</span>{% endfor %}
+      {% for s in art.subtopics %}<span class="badge">{{ s }}</span>{% endfor %}
+    </div>
+  </header>
+  {% if art.summary %}<p><strong>Summary:</strong> {{ art.summary }}
+    {% if art.importance %}<span class="muted small">(importance {{ art.importance }}{% if art.sentiment %}, {{ art.sentiment }}{% endif %})</span>{% endif %}</p>{% endif %}
+  <div class="article-body">{{ body|md }}</div>
+  {% if related %}
+  <footer>
+    <strong>Also covered by</strong>
+    <ul>{% for r in related %}<li><a href="/articles/{{ r.id }}">{{ r.title }}</a> <span class="muted small">({{ r.source }})</span></li>{% endfor %}</ul>
+  </footer>
+  {% endif %}
+  <p class="small muted">Vault file: <code>{{ art.path }}.md</code></p>
+</article>
+{% endblock %}
