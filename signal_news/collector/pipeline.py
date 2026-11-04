@@ -332,10 +332,11 @@ async def collect_async(
         ClusterCandidate(id=r["id"], title_norm=r["title_norm"], cluster_id=r["cluster_id"])
         for r in db.recent_for_clustering(window_start)
     ]
+    vectors = _embed_candidates(cfg, db, candidates, recent) if cfg.qa.embeddings_enabled else {}
     new_counts: dict[str, int] = {}
     for c in candidates:
         try:
-            art = _store_candidate(cfg, db, vault, tagger, c, recent, kev_set)
+            art = _store_candidate(cfg, db, vault, tagger, c, recent, kev_set, vectors.get(c.id))
         except Exception as exc:  # noqa: BLE001
             log.exception("Failed to store %s", c.url)
             result.errors.append(f"{c.src.name}: store failed for {c.url}: {exc}")
@@ -344,7 +345,10 @@ async def collect_async(
         new_counts[c.src.name] = new_counts.get(c.src.name, 0) + 1
         recent.append(
             ClusterCandidate(
-                id=art["id"], title_norm=art["title_norm"], cluster_id=art["cluster_id"]
+                id=art["id"],
+                title_norm=art["title_norm"],
+                cluster_id=art["cluster_id"],
+                vector=vectors.get(c.id),
             )
         )
 
@@ -380,6 +384,37 @@ async def collect_async(
     return result
 
 
+def _embed_candidates(
+    cfg: Config, db: Database, candidates: list[_Candidate], recent: list[ClusterCandidate]
+) -> dict[str, list[float]]:
+    """Best-effort embeddings for same-story clustering. Returns {} if the model is unavailable."""
+    import numpy as np
+
+    from signal_news.llm.base import LLMError, get_provider
+
+    if not candidates:
+        return {}
+    try:
+        provider = get_provider(cfg, "embeddings")
+        texts = [f"{c.item.title}\n{plain_text(c.feed_md)[:500]}" for c in candidates]
+        vecs = provider.embed(texts)
+    except (LLMError, ValueError) as exc:
+        log.info("Embeddings skipped during collection: %s", exc)
+        return {}
+    out: dict[str, list[float]] = {}
+    for c, v in zip(candidates, vecs, strict=False):
+        out[c.id] = v
+        arr = np.asarray(v, dtype=np.float32)
+        db.store_embedding(c.id, provider.model, arr.tobytes(), int(arr.shape[0]))
+    stored = {
+        aid: np.frombuffer(b, dtype=np.float32).tolist()
+        for aid, _, b in db.embeddings_for([r.id for r in recent])
+    }
+    for r in recent:
+        r.vector = stored.get(r.id)
+    return out
+
+
 def _store_candidate(
     cfg: Config,
     db: Database,
@@ -388,6 +423,7 @@ def _store_candidate(
     c: _Candidate,
     recent: list[ClusterCandidate],
     kev_set: set[str],
+    vector: list[float] | None = None,
 ) -> dict[str, Any]:
     it, src = c.item, c.src
     collected = datetime.now(cfg.tz).replace(microsecond=0)
@@ -410,6 +446,8 @@ def _store_candidate(
         recent,
         threshold=cfg.dedupe.title_similarity,
         min_shared=cfg.dedupe.min_shared_words,
+        vector=vector,
+        embedding_threshold=cfg.dedupe.embedding_similarity,
     )
     if matched and not cluster:
         cluster = new_cluster_id(matched)
