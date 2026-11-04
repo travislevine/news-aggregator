@@ -34,6 +34,7 @@ class ScheduleConfig(BaseModel):
     catch_up_on_start: bool = True
     max_digest_gap_hours: int = 72
     summarize_after_collect: bool = True
+    digest_fallback_after_hours: float = 4.0
 
     @field_validator("digest_time")
     @classmethod

@@ -17,8 +17,9 @@ schedule:
   collect_interval_minutes: 60  # How often to collect while the app is running
   digest_time: "11:00"          # Daily digest time (local). US close and ASX open are covered by then.
   catch_up_on_start: true       # Collect immediately on start; build today's digest if it's overdue
-  max_digest_gap_hours: 72      # If the last digest is older than this, only the last 72 h are used
+  max_digest_gap_hours: 72      # If the last digest is more than 3 calendar days old, only the last 72 h are used
   summarize_after_collect: true # Summarise new articles right after each collection
+  digest_fallback_after_hours: 4 # If the model is still down this long after digest time, send a headline-only digest
 
 collection:
   user_agent: "SignalNewsBot/0.1 (personal use)"
@@ -84,6 +85,7 @@ topics:
       - { title: "Hardware & Embedded", subtopics: [hardware] }
       - { title: "Self-hosting & Homelab", subtopics: [homelab, beginner] }
       - { title: "IoT Security", subtopics: [iot_security] }
+      - { title: "Other IoT & Homelab News", subtopics: [] }
 
 # Finance watchlist. `names` are company names/aliases matched in article text.
 # Short or common-word tickers (ON, IT, A, ALL) only match as $TICKER or "(NASDAQ: TICKER)".

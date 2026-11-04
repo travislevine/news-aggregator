@@ -99,6 +99,8 @@ def dump_front_matter(meta: dict[str, Any], key_order: list[str] | None = None) 
         dt = _parse_dt(ordered[k])
         if dt is not None:
             ordered[k] = dt
+    if isinstance(ordered.get("date"), str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", ordered["date"]):
+        ordered["date"] = date.fromisoformat(ordered["date"])
     text = yaml.dump(
         ordered,
         Dumper=_Dumper,

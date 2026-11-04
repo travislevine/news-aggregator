@@ -108,6 +108,11 @@ def mock_transport(
 
 @pytest.fixture
 def feed_routes() -> dict:
+    return make_feed_routes()
+
+
+def make_feed_routes() -> dict:
+    """Fake responses for every URL the test sources use."""
     xml = {"content-type": "application/rss+xml"}
     return {
         "https://www.example-security.com/feed/": (
